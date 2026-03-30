@@ -1,8 +1,18 @@
-# Amazi Music 🎵
+# Amazi Music
 
 Site vitrine dédié à la musique amazighe — culture berbère, musique de détente, événements et personnages mythiques.
 
 🌐 **Live** : [amazimusic.fr](https://amazimusic.fr)
+
+## Screenshots
+
+| Hero | Onglets & Titres |
+|------|-----------------|
+| ![Hero](screenshots/hero.png) | ![Player](screenshots/player.png) |
+
+| Personnages Mythiques | Mobile |
+|----------------------|--------|
+| ![Mythiques](screenshots/mythiques.png) | ![Mobile](screenshots/mobile_hero.png) |
 
 ## Stack
 
