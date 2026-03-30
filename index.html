@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AMAZI — Musique Berbère & Orientale · Dubaï</title>
+<meta name="description" content="Écoute et télécharge la musique d'Amazi — ambiance berbère & orientale du Café Barber de Dubaï."/>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+<link rel="shortcut icon" href="favicon.svg"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "background": "#161311",
+        "surface": "#161311",
+        "surface-dim": "#161311",
+        "surface-container-lowest": "#100e0c",
+        "surface-container-low": "#1e1b19",
+        "surface-container": "#221f1d",
+        "surface-container-high": "#2d2927",
+        "surface-container-highest": "#383432",
+        "surface-bright": "#3c3836",
+        "surface-variant": "#383432",
+        "surface-tint": "#ffb695",
+        "on-background": "#e9e1dd",
+        "on-surface": "#e9e1dd",
+        "on-surface-variant": "#d8c2ba",
+        "primary": "#ffb695",
+        "primary-container": "#c6805f",
+        "primary-fixed": "#ffdbcc",
+        "primary-fixed-dim": "#ffb695",
+        "on-primary": "#522209",
+        "on-primary-container": "#4a1c04",
+        "on-primary-fixed": "#351000",
+        "secondary": "#e9c349",
+        "secondary-container": "#af8d11",
+        "secondary-fixed": "#ffe088",
+        "secondary-fixed-dim": "#e9c349",
+        "on-secondary": "#3c2f00",
+        "tertiary": "#d9c596",
+        "tertiary-container": "#a18f64",
+        "tertiary-fixed": "#f6e1b0",
+        "tertiary-fixed-dim": "#d9c596",
+        "on-tertiary": "#3b2f0d",
+        "outline": "#a08d85",
+        "outline-variant": "#53443d",
+        "inverse-surface": "#e9e1dd",
+        "inverse-on-surface": "#33302d",
+        "inverse-primary": "#8b4f32",
+        "error": "#ffb4ab",
+      },
+      fontFamily: {
+        "headline": ["Noto Serif"],
+        "body": ["Manrope"],
+        "label": ["Manrope"]
+      },
+      borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+    },
+  },
+}
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .zellij-pattern {
+    background-image: radial-gradient(circle at 2px 2px, rgba(217,197,150,0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  .hero-gradient { background: linear-gradient(to top, #161311 0%, rgba(22,19,17,0.5) 55%, rgba(22,19,17,0) 100%); }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .track-row:hover .track-num { display: none; }
+  .track-row:hover .track-play-hover { display: flex !important; }
+  .progress-bar { cursor: pointer; }
+  @keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
+  .playing-dot { animation: shimmer 1.2s ease-in-out infinite; }
+
+  /* Hero slideshow */
+  .hero-slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    transform: scale(1.05);
+    animation: hero-zoom 8s ease-in-out infinite alternate;
+  }
+  .hero-slide.active { opacity: 1; }
+  @keyframes hero-zoom {
+    from { transform: scale(1.05); }
+    to   { transform: scale(1.12); }
+  }
+
+  /* Image fallback */
+  .cover-img { background: linear-gradient(135deg, #2d1f14 0%, #3d2510 50%, #1e1509 100%); }
+  .cover-img img { display: block; }
+  .cover-img img[src=""], .cover-img img:not([src]) { display: none; }
+
+  /* Grid card */
+  .track-card .card-overlay { opacity: 0; transition: opacity .2s; }
+  .track-card:hover .card-overlay { opacity: 1; }
+  .track-card .card-dl { opacity: 0; transition: opacity .2s; }
+  .track-card:hover .card-dl { opacity: 1; }
+  .track-card { transition: transform .15s; }
+  .track-card:hover { transform: translateY(-3px); }
+  .track-card.is-playing .card-cover { box-shadow: 0 0 0 2px #ffb695, 0 0 24px rgba(255,182,149,0.3); }
+  .track-card.is-playing .card-num { color: #ffb695; }
+
+  /* View toggle active */
+  .view-btn.active { color: #ffb695; }
+  .view-btn { color: #a08d85; transition: color .15s; }
+  .view-btn:hover { color: #d8c2ba; }
+
+  /* Category tabs */
+  .tab-btn { color: rgba(160,141,133,0.6); border-color: rgba(83,68,61,0.35); background: transparent; transition: color .2s, border-color .2s, background .2s; }
+  .tab-btn:hover { color: rgba(255,182,149,0.85); border-color: rgba(255,182,149,0.35); }
+  .tab-btn.active { color: #ffb695; border-color: #ffb695; background: rgba(255,182,149,0.08); }
+</style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 selection:text-primary min-h-screen flex flex-col zellij-pattern">
+
+<!-- ── NAV ── -->
+<nav class="fixed top-0 w-full z-50 bg-[#161311]/75 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-5">
+  <div class="text-2xl font-black text-primary tracking-widest uppercase font-headline italic">AMAZI</div>
+  <div class="hidden md:flex items-center gap-3 text-xs font-label font-bold tracking-[0.15em] uppercase">
+    <span class="text-tertiary-fixed-dim px-1">ⵣ</span>
+    <span class="text-on-surface-variant" data-i18n="nav.music">Musique Berbère &amp; Orientale</span>
+    <span class="text-tertiary-fixed-dim px-1">ⵣ</span>
+    <span class="text-on-surface-variant/50" data-i18n="nav.barber">Amazi Café Barber · Dubaï</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <!-- Stats badge -->
+    <div id="stats-badge" class="hidden items-center gap-1.5 text-[10px] font-label tracking-wide text-on-surface-variant/40 px-2.5 py-1.5 rounded-md border border-outline-variant/20 select-none" title="Visiteurs · Téléchargements">
+      <span class="material-symbols-outlined" style="font-size:13px;line-height:1;vertical-align:middle">visibility</span>
+      <span id="visit-count">—</span>
+      <span class="opacity-30 px-0.5">·</span>
+      <span class="material-symbols-outlined" style="font-size:13px;line-height:1;vertical-align:middle">download</span>
+      <span id="dl-count">—</span>
+    </div>
+    <button onclick="switchLang()"
+      class="text-xs font-label font-bold tracking-widest text-on-surface-variant border border-outline-variant/40 px-2.5 py-1.5 rounded-md hover:border-primary hover:text-primary transition-colors"
+      data-i18n="lang.toggle">EN</button>
+    <a href="https://buy.stripe.com/4gM14o81f09S4wH37R7EQ00" target="_blank"
+       class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold text-sm rounded-full transition-transform hover:scale-105 active:scale-95 shadow-lg">
+      <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">favorite</span>
+      <span data-i18n="nav.support">Soutenir</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="relative w-full h-[600px] md:h-[780px] overflow-hidden flex items-end">
+  <div class="absolute inset-0 z-0" id="hero-bg">
+    <!-- Slides injected by JS -->
+    <div class="absolute inset-0 hero-gradient z-10"></div>
+    <div class="absolute inset-0 bg-black/40 z-10"></div>
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-3xl pointer-events-none z-10"></div>
+    <div class="absolute bottom-1/3 right-1/4 w-64 h-64 bg-secondary/6 rounded-full blur-3xl pointer-events-none z-10"></div>
+  </div>
+  <div class="relative z-10 px-6 md:px-16 pb-28 max-w-4xl">
+    <div class="flex items-center gap-4 mb-5">
+      <span class="px-3 py-1 bg-secondary/20 text-secondary border border-secondary/20 text-[10px] uppercase tracking-[0.25em] font-bold rounded-full" data-i18n="hero.badge">Écoute Libre</span>
+      <div class="h-px w-20 bg-secondary/30"></div>
+    </div>
+    <h1 class="font-headline text-5xl md:text-8xl font-black text-on-surface leading-[1.05] mb-4 tracking-tighter" data-i18n="hero.h1">
+      Musique de l'<span class="italic text-primary font-normal">Âme Amazigh</span>
+    </h1>
+    <p class="font-headline text-lg md:text-xl text-on-surface-variant/80 italic mb-8 max-w-xl" data-i18n="hero.p">
+      12 compositions berbères &amp; orientales — téléchargement gratuit, soutien libre.
+    </p>
+    <button onclick="playTrack(0)"
+      class="px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold rounded-md flex items-center gap-3 transition-transform active:scale-95 shadow-xl text-sm uppercase tracking-wide">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+      <span data-i18n="hero.btn">Écouter maintenant</span>
+    </button>
+  </div>
+</section>
+
+<!-- ── CATEGORY TABS ── -->
+<div class="px-6 md:px-16 pt-12 pb-0 max-w-6xl mx-auto w-full">
+  <div class="flex gap-3 flex-wrap">
+    <button id="tab-music" onclick="setCategory('music')"
+      class="tab-btn active flex items-center gap-2.5 px-6 py-3 rounded-full font-label font-bold text-sm uppercase tracking-[0.12em] border">
+      <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">music_note</span>
+      <span data-i18n="tab.music">Musique Détente</span>
+    </button>
+    <button id="tab-culture" onclick="setCategory('culture')"
+      class="tab-btn flex items-center gap-2.5 px-6 py-3 rounded-full font-label font-bold text-sm uppercase tracking-[0.12em] border">
+      <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">auto_stories</span>
+      <span data-i18n="tab.culture">Culture Amazi</span>
+    </button>
+    <button id="tab-events" onclick="setCategory('events')"
+      class="tab-btn flex items-center gap-2.5 px-6 py-3 rounded-full font-label font-bold text-sm uppercase tracking-[0.12em] border">
+      <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">event</span>
+      <span data-i18n="tab.events">Événements</span>
+    </button>
+  </div>
+</div>
+
+<!-- ── TRACKLIST ── -->
+<section class="px-6 md:px-16 py-10 max-w-6xl mx-auto w-full">
+  <div class="flex justify-between items-end mb-10">
+    <div>
+      <h2 id="section-title" class="font-headline text-3xl font-bold text-on-surface tracking-tight">Musique Détente</h2>
+      <div class="h-0.5 w-16 bg-primary-container mt-3"></div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span id="disco-count" class="text-xs font-label uppercase tracking-[0.2em] text-tertiary-fixed-dim"></span>
+      <!-- View toggle -->
+      <div class="flex items-center gap-1 bg-surface-container rounded-lg p-1">
+        <button id="btn-list" onclick="setView('list')" class="view-btn active p-2 rounded-md" title="Vue liste">
+          <span class="material-symbols-outlined text-xl" style="font-size:20px">view_list</span>
+        </button>
+        <button id="btn-grid" onclick="setView('grid')" class="view-btn p-2 rounded-md" title="Vue grille">
+          <span class="material-symbols-outlined text-xl" style="font-size:20px">grid_view</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tracklist" class="flex flex-col gap-1">
+    <!-- Injected by JS -->
+  </div>
+</section>
+
+<!-- ── PERSONNAGES MYTHIQUES ── -->
+<section class="px-6 md:px-16 py-16 max-w-6xl mx-auto w-full">
+  <div class="mb-10">
+    <h2 class="font-headline text-3xl font-bold text-on-surface tracking-tight" data-i18n="mythes.title">Personnages Mythiques</h2>
+    <div class="h-0.5 w-16 bg-secondary-container mt-3"></div>
+    <p class="text-on-surface-variant/70 font-body text-sm mt-4 max-w-xl italic" data-i18n="mythes.sub">Figures légendaires de la culture Amazigh — divinités, héros et esprits des temps anciens.</p>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(0)">
+      <div class="aspect-[3/4] overflow-hidden">
+        <img src="personnages/teryel.png" alt="Teryel" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-4">
+        <p class="font-headline font-bold text-on-surface text-sm leading-tight">Teryel</p>
+        <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.teryel.role">Sorcière-Ogresse</p>
+      </div>
+    </div>
+    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(1)">
+      <div class="aspect-[3/4] overflow-hidden">
+        <img src="personnages/anzar.png" alt="Anzar" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-4">
+        <p class="font-headline font-bold text-on-surface text-sm leading-tight">Anzar</p>
+        <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.anzar.role">Dieu de la Pluie</p>
+      </div>
+    </div>
+    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(2)">
+      <div class="aspect-[3/4] overflow-hidden">
+        <img src="personnages/settut.png" alt="Settut" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-4">
+        <p class="font-headline font-bold text-on-surface text-sm leading-tight">Settut</p>
+        <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.settut.role">Première Mère du Monde</p>
+      </div>
+    </div>
+    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(3)">
+      <div class="aspect-[3/4] overflow-hidden">
+        <img src="personnages/hemmu.png" alt="Hemmu u Namir" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-4">
+        <p class="font-headline font-bold text-on-surface text-sm leading-tight">Hemmu u Namir</p>
+        <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.hemmu.role">Roi Héros</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LIGHTBOX PERSONNAGES ── -->
+<div id="personnage-lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 md:p-10 overflow-y-auto" onclick="closePersonnage(event)">
+  <div class="absolute inset-0 bg-black/85 backdrop-blur-md"></div>
+  <!-- Bouton fermer fixe toujours visible -->
+  <button onclick="closePersonnage()" class="fixed top-4 right-4 z-[110] w-10 h-10 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/90 transition-colors" style="touch-action:manipulation">
+    <span class="material-symbols-outlined text-xl">close</span>
+  </button>
+  <div id="lb-modal" class="relative z-10 max-w-lg w-full rounded-2xl overflow-hidden shadow-2xl bg-surface-container-low flex flex-col md:flex-row my-auto" onclick="event.stopPropagation()">
+    <div class="md:w-56 flex-shrink-0">
+      <img id="lb-img" src="" alt="" class="w-full h-64 md:h-full object-cover object-top"/>
+    </div>
+    <div class="flex-1 p-6 flex flex-col justify-between">
+      <div>
+        <p id="lb-role" class="text-tertiary-fixed-dim text-[10px] uppercase tracking-[0.25em] font-label mb-2"></p>
+        <h3 id="lb-name" class="font-headline text-2xl font-bold text-on-surface mb-4"></h3>
+        <p id="lb-desc" class="text-on-surface-variant font-body text-sm leading-relaxed"></p>
+      </div>
+      <button onclick="closePersonnage()" class="mt-6 self-start flex items-center gap-2 text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-base">close</span>
+        <span data-i18n="mythes.close">Fermer</span>
+      </button>
+    </div>
+  </div>
+  <!-- Bloc vidéo YouTube (affiché uniquement si le personnage en a une) -->
+  <div id="lb-video-wrap" class="hidden relative z-10 w-full max-w-2xl mt-3 rounded-2xl overflow-hidden shadow-2xl bg-surface-container-low" onclick="event.stopPropagation()">
+    <p id="lb-video-label" class="text-tertiary-fixed-dim text-[10px] uppercase tracking-[0.25em] font-label px-5 pt-4 pb-2"></p>
+    <div class="relative w-full" style="padding-bottom:56.25%">
+      <iframe id="lb-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+        class="absolute inset-0 w-full h-full rounded-b-2xl" frameborder="0"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUPPORT ── -->
+<section class="px-6 md:px-16 py-20 bg-surface-container-low/60">
+  <div class="max-w-2xl mx-auto text-center">
+    <div class="text-3xl text-tertiary-fixed-dim tracking-[0.5em] mb-6">ⵣ ✦ ⵣ</div>
+    <h2 class="font-headline text-4xl font-bold text-on-surface mb-4 italic" data-i18n="support.title">Soutenir Amazi</h2>
+    <p class="text-on-surface-variant font-body leading-relaxed mb-10 max-w-lg mx-auto" data-i18n="support.p">
+      La musique est offerte librement.<br>
+      Si elle t'a touché, soutiens l'artiste avec le montant de ton choix.
+    </p>
+    <a href="https://buy.stripe.com/4gM14o81f09S4wH37R7EQ00" target="_blank"
+       class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold text-base rounded-md transition-transform hover:scale-105 active:scale-95 shadow-2xl uppercase tracking-wide">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">favorite</span>
+      <span data-i18n="support.btn">Soutenir Amazi — Montant libre</span>
+    </a>
+    <p class="text-xs text-on-surface-variant/50 mt-5 font-label tracking-wide" data-i18n="support.legal">Paiement sécurisé · Stripe · Montant minimum 1€</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="w-full py-12 px-6 md:px-16 bg-[#1a1715] flex flex-col md:flex-row justify-between items-center gap-6 border-t border-tertiary/10">
+  <div class="text-primary font-headline italic text-xl">AMAZI</div>
+  <div class="text-sm tracking-wide text-primary-container/70 font-label text-center" data-i18n="footer.copy">
+    © 2025 Amazi · Musique Berbère &amp; Orientale · Amazi Café Barber · Dubaï
+  </div>
+  <div class="text-tertiary-fixed-dim text-lg tracking-[0.5em]">ⵣ ✦ ⵣ</div>
+</footer>
+
+<!-- ── BOTTOM PLAYER ── -->
+<div id="player-bar" class="fixed bottom-0 w-full z-50 h-20 bg-[#161311]/80 backdrop-blur-2xl shadow-[0_-8px_32px_rgba(22,19,17,0.7)] translate-y-full transition-transform duration-300">
+  <div class="absolute top-0 left-0 w-full h-0.5 bg-outline-variant/20 cursor-pointer" id="progress-bar-container" onclick="seekFromBar(event)">
+    <div id="progress-bar-fill" class="h-full bg-secondary-fixed-dim shadow-[0_0_8px_rgba(233,195,73,0.5)] w-0 transition-none pointer-events-none"></div>
+  </div>
+  <div class="flex items-center justify-between w-full h-full px-4 md:px-10 max-w-7xl mx-auto">
+    <!-- Track info -->
+    <div class="flex items-center gap-4 w-1/3 min-w-0">
+      <div id="player-thumb" class="w-10 h-10 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+        <img id="player-thumb-img" src="" alt="" class="w-full h-full object-cover hidden"/>
+        <div id="player-thumb-icon" class="w-full h-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary text-lg playing-dot" style="font-variation-settings:'FILL' 1;">music_note</span>
+        </div>
+      </div>
+      <div class="min-w-0">
+        <p id="player-title" class="font-headline text-sm font-bold text-on-surface truncate">—</p>
+        <p class="text-[10px] uppercase tracking-widest text-primary-fixed-dim font-label">Amazi</p>
+      </div>
+    </div>
+    <!-- Controls -->
+    <div class="flex items-center gap-5 md:gap-8">
+      <button onclick="prevTrack()" class="text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-2xl">skip_previous</span>
+      </button>
+      <button onclick="togglePlayPause()" id="btn-playpause"
+        class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary-container flex items-center justify-center transition-transform active:scale-90 hover:scale-105 shadow-lg">
+        <span class="material-symbols-outlined text-2xl" id="playpause-icon" style="font-variation-settings:'FILL' 1;">pause</span>
+      </button>
+      <button onclick="nextTrack()" class="text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-2xl">skip_next</span>
+      </button>
+    </div>
+    <!-- Time + Download -->
+    <div class="flex items-center gap-4 w-1/3 justify-end">
+      <span id="player-time" class="text-xs text-on-surface-variant font-label hidden md:block">0:00 / —</span>
+      <a id="player-download" href="#" download
+        class="flex items-center gap-1.5 px-3 py-1.5 border border-outline-variant/30 rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors text-xs font-label uppercase tracking-wide">
+        <span class="material-symbols-outlined text-base">download</span>
+        <span class="hidden md:inline">DL</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<audio id="audio-el"></audio>
+
+<script>
+/* ── i18n ── */
+const T = {
+  fr: {
+    'nav.music':    'Musique Berbère &amp; Orientale',
+    'nav.barber':   'Amazi Café Barber · Dubaï',
+    'nav.support':  'Soutenir',
+    'lang.toggle':  'EN',
+    'hero.badge':   'Écoute Libre',
+    'hero.h1':      "Musique de l'<span class=\"italic text-primary font-normal\">Âme Amazigh</span>",
+    'hero.p':       'Compositions berbères &amp; orientales — téléchargement gratuit, soutien libre.',
+    'hero.btn':     'Écouter maintenant',
+    'mythes.title': 'Personnages Mythiques',
+    'mythes.sub':   'Figures légendaires de la culture Amazigh — divinités, héros et esprits des temps anciens.',
+    'mythes.close': 'Fermer',
+    'mythes.teryel.role':  'Sorcière-Ogresse',
+    'mythes.anzar.role':   'Dieu de la Pluie',
+    'mythes.settut.role':  'Première Mère du Monde',
+    'mythes.hemmu.role':   'Roi Héros',
+    'tab.music':    'Musique Détente',
+    'tab.culture':  'Culture Amazi',
+    'tab.events':   'Événements',
+    'tab.music.title':   'Musique Détente',
+    'tab.culture.title': 'Culture Amazi',
+    'tab.events.title':  'Événements',
+    'tab.empty':    'Contenu bientôt disponible — Écoutes à venir',
+    'disco.count':  'titres · Gratuit',
+    'support.title':'Soutenir Amazi',
+    'support.p':    "La musique est offerte librement.<br>Si elle t'a touché, soutiens l'artiste avec le montant de ton choix.",
+    'support.btn':  'Soutenir Amazi — Montant libre',
+    'support.legal':'Paiement sécurisé · Stripe · Montant minimum 1€',
+    'footer.copy':  '© 2025 Amazi · Musique Berbère &amp; Orientale · Amazi Café Barber · Dubaï',
+  },
+  en: {
+    'nav.music':    'Berber &amp; Oriental Music',
+    'nav.barber':   'Amazi Café Barber · Dubai',
+    'nav.support':  'Support',
+    'lang.toggle':  'FR',
+    'hero.badge':   'Free Listening',
+    'hero.h1':      'Music of the <span class="italic text-primary font-normal">Amazigh Soul</span>',
+    'hero.p':       'Berber &amp; Oriental compositions — free download, pay what you want.',
+    'hero.btn':     'Listen Now',
+    'mythes.title': 'Mythical Characters',
+    'mythes.sub':   'Legendary figures of Amazigh culture — deities, heroes and spirits of ancient times.',
+    'mythes.close': 'Close',
+    'mythes.teryel.role':  'Sorceress-Ogress',
+    'mythes.anzar.role':   'God of Rain',
+    'mythes.settut.role':  'First Mother of the World',
+    'mythes.hemmu.role':   'King & Hero',
+    'tab.music':    'Relaxing Music',
+    'tab.culture':  'Amazi Culture',
+    'tab.events':   'Events',
+    'tab.music.title':   'Relaxing Music',
+    'tab.culture.title': 'Amazi Culture',
+    'tab.events.title':  'Events',
+    'tab.empty':    'Content coming soon — Upcoming listens',
+    'disco.count':  'tracks · Free',
+    'support.title':'Support Amazi',
+    'support.p':    'The music is freely offered.<br>If it moved you, support the artist with any amount you choose.',
+    'support.btn':  'Support Amazi — Pay What You Want',
+    'support.legal':'Secure payment · Stripe · Minimum 1€',
+    'footer.copy':  '© 2025 Amazi · Berber &amp; Oriental Music · Amazi Café Barber · Dubai',
+  }
+};
+
+let LANG = (function() {
+  const saved = localStorage.getItem('amazi-lang');
+  if (saved) return saved;
+  const nl = (navigator.language || 'en').toLowerCase();
+  return nl.startsWith('fr') ? 'fr' : 'en';
+})();
+
+function applyLang(lang) {
+  LANG = lang;
+  document.documentElement.lang = lang;
+  document.title = lang === 'fr'
+    ? 'AMAZI — Musique Berbère & Orientale · Dubaï'
+    : 'AMAZI — Berber & Oriental Music · Dubai';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
+  });
+  // Rebuild tracklist with updated subtitles
+  const tl = document.getElementById('tracklist');
+  if (tl && tl.children.length > 0) setView(currentView);
+  updateSectionHeader();
+}
+
+function switchLang() {
+  const next = LANG === 'fr' ? 'en' : 'fr';
+  localStorage.setItem('amazi-lang', next);
+  applyLang(next);
+  // Si une piste avec variante langue est en cours, switcher l'audio
+  if (currentIdx >= 0) {
+    const t = activeTracks[currentIdx];
+    if (t && (t.src_en || t.src !== t.src)) {
+      const wasPlaying = !audio.paused;
+      const pos = audio.currentTime;
+      audio.src = trackSrc(t);
+      playerDl.href = trackDl(t);
+      playerDl.download = trackDlName(t);
+      playerTitle.textContent = t.title + ' — ' + trackSub(t);
+      if (wasPlaying) { audio.currentTime = 0; audio.play(); }
+    }
+  }
+}
+
+const TRACKS = [
+  { num:"01", title:"Adrar n Ifi",       sub:"Montagne de Lumière",   sub_en:"Mountain of Light",      src:"music/adrar.mp3",   dl:"music/adrar.mp3",   dlName:"Amazi - Adrar n Ifi.mp3",          img:"covers/adrar.jpg" },
+  { num:"02", title:"Agadir Amayas",      sub:"Crépuscule Berbère",    sub_en:"Berber Twilight",         src:"music/agadir.mp3",  dl:"music/agadir.mp3",  dlName:"Amazi - Agadir Amayas.mp3",        img:"covers/agadir.jpg" },
+  { num:"03", title:"Akal Ameqqran",      sub:"Âme de la Kabylie",     sub_en:"Soul of Kabylie",         src:"music/akal.mp3",    dl:"music/akal.mp3",    dlName:"Amazi - Akal Ameqqran.mp3",        img:"covers/akal.jpg" },
+  { num:"04", title:"Andalus",            sub:"Nuit du Santoor",        sub_en:"Night of the Santoor",    src:"music/andalus.mp3", dl:"music/andalus.mp3", dlName:"Amazi - Andalus.mp3",              img:"covers/andalus.jpg" },
+  { num:"05", title:"Anzar",              sub:"Souffle du Vent Chaud",  sub_en:"Breath of the Warm Wind", src:"music/anzar.mp3",   dl:"music/anzar.mp3",   dlName:"Amazi - Anzar.mp3",                img:"covers/anzar.jpg" },
+  { num:"06", title:"Imesli n Darbouka",  sub:"Rythme du Maroc",        sub_en:"Rhythm of Morocco",       src:"music/imesli.mp3",  dl:"music/imesli.mp3",  dlName:"Amazi - Imesli n Darbouka.mp3",    img:"covers/imesli.jpg" },
+  { num:"07", title:"Izuran n Sahara",    sub:"Racines du Désert",      sub_en:"Roots of the Desert",     src:"music/izuran.mp3",  dl:"music/izuran.mp3",  dlName:"Amazi - Izuran n Sahara.mp3",      img:"covers/izuran.jpg" },
+  { num:"08", title:"Layla Hijaz",        sub:"Voix de la Nuit",        sub_en:"Voice of the Night",      src:"music/layla.mp3",   dl:"music/layla.mp3",   dlName:"Amazi - Layla Hijaz.mp3",          img:"covers/layla.jpg" },
+  { num:"09", title:"Maqam Bayati",       sub:"Jardin de Perse",        sub_en:"Garden of Persia",        src:"music/maqam.mp3",   dl:"music/maqam.mp3",   dlName:"Amazi - Maqam Bayati.mp3",         img:"covers/maqam.jpg" },
+  { num:"10", title:"Qanun Bayati",       sub:"Lounge Oriental",        sub_en:"Oriental Lounge",         src:"music/qanun.mp3",   dl:"music/qanun.mp3",   dlName:"Amazi - Qanun Bayati.mp3",         img:"covers/qanun.jpg" },
+  { num:"11", title:"Tafat n Ténéré",     sub:"Lumière du Désert",      sub_en:"Desert Light",            src:"music/tafat.mp3",   dl:"music/tafat.mp3",   dlName:"Amazi - Tafat n Tenere.mp3",       img:"covers/tafat.jpg" },
+  { num:"12", title:"Tasusmi n Gnawa",    sub:"Transe Guembri",         sub_en:"Guembri Trance",          src:"music/tasusmi.mp3", dl:"music/tasusmi.mp3", dlName:"Amazi - Tasusmi n Gnawa.mp3",      img:"covers/tasusmi.jpg" },
+  { num:"13", title:"Ruh Al-Maghreb",     sub:"Âme du Désert Berbère",  sub_en:"Soul of the Berber Desert", src:"music/ruh.mp3",     dl:"music/ruh.mp3",     dlName:"Amazi - Ruh Al-Maghreb.mp3",       img:"covers/ruh.jpg" },
+  { num:"14", title:"Tiwizi n Imazighen", sub:"Souffle de l'Atlas",     sub_en:"Breath of the Atlas",       src:"music/tiwizi.mp3",  dl:"music/tiwizi.mp3",  dlName:"Amazi - Tiwizi n Imazighen.mp3",   img:"covers/tiwizi.jpg" },
+  { num:"15", title:"Sama' Al-Qanun",    sub:"Voix du Qanon",          sub_en:"Voice of the Qanun",        src:"music/sama_qanun.mp3", dl:"music/sama_qanun.mp3", dlName:"Amazi - Sama Al-Qanun.mp3",      img:"covers/sama_qanun.jpg" },
+  { num:"16", title:"Layl Al-Sharq",     sub:"Nuit d'Orient",          sub_en:"Night of the Orient",       src:"music/layl_sharq.mp3", dl:"music/layl_sharq.mp3", dlName:"Amazi - Layl Al-Sharq.mp3",      img:"covers/layl_sharq.jpg" },
+];
+
+// ── TRACKS PAR CATÉGORIE ──
+const TRACKS_MUSIC = TRACKS;
+const TRACKS_CULTURE = [
+  { num:"01", title:"L'Héritage des Hommes Libres", sub:"Histoire & Culture Amazigh", sub_en:"The Legacy of Free Men", src:"culture/heritage.mp3", dl:"culture/heritage.mp3", dlName:"Amazi - L-Heritage des Hommes Libres.mp3", src_en:"culture/heritage_en.mp3", dl_en:"culture/heritage_en.mp3", dlName_en:"Amazi - The Legacy of Free Men.mp3", img:"covers/heritage.jpg" },
+];
+const TRACKS_EVENTS = [
+  // Exemple : { num:"01", title:"...", sub:"...", sub_en:"...", src:"events/...", dl:"events/...", dlName:"Amazi - ....mp3", img:"covers/..." }
+];
+
+let activeCategory = 'music';
+let activeTracks = TRACKS_MUSIC;
+
+let currentIdx = -1;
+let currentView = 'list';
+const audio = document.getElementById('audio-el');
+const playerBar = document.getElementById('player-bar');
+const progressFill = document.getElementById('progress-bar-fill');
+const playerTitle = document.getElementById('player-title');
+const playerTime = document.getElementById('player-time');
+const playerDl = document.getElementById('player-download');
+const playpauseIcon = document.getElementById('playpause-icon');
+const playerThumbImg = document.getElementById('player-thumb-img');
+const playerThumbIcon = document.getElementById('player-thumb-icon');
+
+function fmt(s) {
+  if (!isFinite(s)) return '—';
+  return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+}
+
+/* ── CATEGORY SWITCH ── */
+function setCategory(cat) {
+  activeCategory = cat;
+  activeTracks = cat === 'music' ? TRACKS_MUSIC : cat === 'culture' ? TRACKS_CULTURE : TRACKS_EVENTS;
+  currentIdx = -1;
+  audio.pause();
+  audio.src = '';
+  playerBar.classList.add('translate-y-full');
+  ['music','culture','events'].forEach(c => {
+    document.getElementById('tab-'+c).classList.toggle('active', c === cat);
+  });
+  updateSectionHeader();
+  setView(currentView);
+}
+
+function updateSectionHeader() {
+  const titleEl = document.getElementById('section-title');
+  const countEl = document.getElementById('disco-count');
+  if (!titleEl || !countEl) return;
+  const titleKey = 'tab.' + activeCategory + '.title';
+  titleEl.textContent = T[LANG][titleKey] || '';
+  if (activeTracks.length > 0) {
+    countEl.textContent = activeTracks.length + ' ' + T[LANG]['disco.count'];
+  } else {
+    countEl.textContent = '';
+  }
+}
+
+/* ── VIEW TOGGLE ── */
+function setView(v) {
+  currentView = v;
+  document.getElementById('btn-list').classList.toggle('active', v === 'list');
+  document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
+  const container = document.getElementById('tracklist');
+  container.innerHTML = '';
+  if (activeTracks.length === 0) {
+    container.className = '';
+    container.innerHTML = `<div class="flex flex-col items-center justify-center py-24 gap-4 text-on-surface-variant/40">
+      <span class="material-symbols-outlined text-5xl">hourglass_empty</span>
+      <p class="font-label text-sm uppercase tracking-[0.2em]">${T[LANG]['tab.empty']}</p>
+    </div>`;
+    return;
+  }
+  if (v === 'grid') {
+    container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4';
+    buildGridCards();
+  } else {
+    container.className = 'flex flex-col gap-1';
+    buildListRows();
+  }
+  // re-highlight current
+  if (currentIdx >= 0) highlightCurrent(currentIdx);
+}
+
+/* ── LIST VIEW ── */
+function buildListRows() {
+  const list = document.getElementById('tracklist');
+  activeTracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'track-row flex items-center justify-between px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors group cursor-pointer';
+    row.id = 'track-'+i;
+    row.innerHTML = `
+      <div class="flex items-center gap-4 min-w-0 flex-1">
+        <!-- Thumbnail -->
+        <div class="cover-img w-11 h-11 rounded flex-shrink-0 overflow-hidden relative bg-surface-container-highest">
+          <img src="${t.img}" alt="${t.title}" class="w-full h-full object-cover" onerror="this.style.display='none'"/>
+          <!-- play overlay -->
+          <div class="track-play-hover hidden absolute inset-0 bg-black/50 items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+          </div>
+        </div>
+        <!-- Number (hidden on hover) -->
+        <span class="track-num font-headline text-sm text-on-surface-variant w-6 text-center flex-shrink-0">${t.num}</span>
+        <div class="min-w-0">
+          <p class="font-headline font-bold text-on-surface text-sm md:text-base truncate group-hover:text-primary transition-colors">
+            ${t.title} <span class="font-normal italic text-on-surface-variant font-headline text-sm">— ${LANG === 'en' ? t.sub_en : t.sub}</span>
+          </p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant/60 mt-0.5 font-label">Amazi</p>
+        </div>
+      </div>
+      <a href="${t.dl}" download="${t.dlName}"
+         onclick="event.stopPropagation(); trackDownload()"
+         class="flex items-center gap-1 px-3 py-1.5 border border-outline-variant/30 rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors text-xs font-label uppercase tracking-wide opacity-0 group-hover:opacity-100 flex-shrink-0 ml-4">
+        <span class="material-symbols-outlined text-base">download</span>
+      </a>
+    `;
+    row.addEventListener('click', () => playTrack(i));
+    list.appendChild(row);
+  });
+}
+
+/* ── GRID VIEW ── */
+function buildGridCards() {
+  const list = document.getElementById('tracklist');
+  activeTracks.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'track-card cursor-pointer relative rounded-xl overflow-hidden bg-surface-container';
+    card.id = 'track-'+i;
+    card.innerHTML = `
+      <!-- Cover image -->
+      <div class="cover-img card-cover relative aspect-square overflow-hidden rounded-t-xl">
+        <img src="${t.img}" alt="${t.title}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onerror="this.style.display='none'"/>
+        <!-- Gradient at bottom -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <!-- Track number -->
+        <span class="card-num absolute top-2 left-2 font-label text-[10px] font-bold text-white/70 tracking-widest">${t.num}</span>
+        <!-- Play button (hover) -->
+        <div class="card-overlay absolute inset-0 flex items-center justify-center">
+          <div class="w-12 h-12 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
+            <span class="material-symbols-outlined text-on-primary text-2xl play-icon" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+          </div>
+        </div>
+        <!-- Download (hover, bottom-right) -->
+        <a href="${t.dl}" download="${t.dlName}"
+           onclick="event.stopPropagation(); trackDownload()"
+           class="card-dl absolute bottom-2 right-2 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:text-secondary hover:border-secondary transition-colors">
+          <span class="material-symbols-outlined text-base">download</span>
+        </a>
+      </div>
+      <!-- Info below -->
+      <div class="px-3 py-2.5">
+        <p class="font-headline font-bold text-on-surface text-xs truncate leading-tight">${t.title}</p>
+        <p class="text-[10px] text-on-surface-variant/70 font-label truncate mt-0.5 italic">${LANG === 'en' ? t.sub_en : t.sub}</p>
+      </div>
+    `;
+    card.addEventListener('click', () => playTrack(i));
+    list.appendChild(card);
+  });
+}
+
+/* ── HIGHLIGHT ── */
+function highlightCurrent(i) {
+  // Clear all
+  document.querySelectorAll('.track-row').forEach(r => {
+    r.classList.remove('bg-surface-container');
+    const num = r.querySelector('.track-num');
+    if (num) num.style.display = '';
+    const ph = r.querySelector('.track-play-hover');
+    if (ph) { ph.style.display = 'none'; ph.querySelector('span').textContent = 'pause'; }
+  });
+  document.querySelectorAll('.track-card').forEach(c => c.classList.remove('is-playing'));
+
+  if (i < 0) return;
+
+  if (currentView === 'list') {
+    const row = document.getElementById('track-'+i);
+    if (row) {
+      row.classList.add('bg-surface-container');
+      const num = row.querySelector('.track-num');
+      if (num) num.style.display = 'none';
+      const ph = row.querySelector('.track-play-hover');
+      if (ph) { ph.style.display = 'flex'; }
+    }
+  } else {
+    const card = document.getElementById('track-'+i);
+    if (card) card.classList.add('is-playing');
+  }
+}
+
+/* ── PLAY ── */
+function trackSrc(t) { return (LANG === 'en' && t.src_en) ? t.src_en : t.src; }
+function trackDl(t)  { return (LANG === 'en' && t.dl_en)  ? t.dl_en  : t.dl;  }
+function trackDlName(t) { return (LANG === 'en' && t.dlName_en) ? t.dlName_en : t.dlName; }
+function trackSub(t) { return LANG === 'en' ? t.sub_en : t.sub; }
+
+function playTrack(i) {
+  currentIdx = i;
+  const t = activeTracks[i];
+  audio.src = trackSrc(t);
+  audio.play();
+  playpauseIcon.textContent = 'pause';
+  playerTitle.textContent = t.title + ' — ' + trackSub(t);
+  playerDl.href = trackDl(t);
+  playerDl.download = trackDlName(t);
+  playerBar.classList.remove('translate-y-full');
+  // Thumb
+  playerThumbImg.src = t.img || '';
+  playerThumbImg.classList.toggle('hidden', !t.img);
+  playerThumbIcon.classList.toggle('hidden', !!t.img);
+  highlightCurrent(i);
+}
+
+function togglePlayPause() {
+  if (currentIdx < 0) { playTrack(0); return; }
+  if (audio.paused) {
+    audio.play();
+    playpauseIcon.textContent = 'pause';
+    updateGridIcon(currentIdx, 'pause');
+  } else {
+    audio.pause();
+    playpauseIcon.textContent = 'play_arrow';
+    updateGridIcon(currentIdx, 'play_arrow');
+  }
+}
+
+function updateGridIcon(i, icon) {
+  const card = document.getElementById('track-'+i);
+  if (!card) return;
+  const pi = card.querySelector('.play-icon');
+  if (pi) pi.textContent = icon;
+}
+
+function nextTrack() { if (activeTracks.length) playTrack((currentIdx + 1) % activeTracks.length); }
+function prevTrack() { if (activeTracks.length) playTrack((currentIdx - 1 + activeTracks.length) % activeTracks.length); }
+
+function seekFromBar(e) {
+  if (!audio.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * audio.duration;
+}
+
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  progressFill.style.width = pct + '%';
+  playerTime.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+});
+
+audio.addEventListener('ended', () => nextTrack());
+audio.addEventListener('pause', () => {
+  playpauseIcon.textContent = 'play_arrow';
+  if (currentIdx >= 0) updateGridIcon(currentIdx, 'play_arrow');
+});
+audio.addEventListener('play', () => {
+  playpauseIcon.textContent = 'pause';
+  if (currentIdx >= 0) updateGridIcon(currentIdx, 'pause');
+});
+
+// ── PERSONNAGES MYTHIQUES ──
+const PERSONNAGES = [
+  {
+    name: "Teryel",
+    img: "personnages/teryel.png",
+    role_fr: "Sorcière-Ogresse",      role_en: "Sorceress-Ogress",
+    desc_fr: "Teryel est une figure redoutable de la mythologie berbère, mi-sorcière, mi-ogresse. Elle incarne les forces obscures et sauvages de la nature. Crainte des hommes, elle rôde dans les forêts et les montagnes, capable de se métamorphoser pour piéger les voyageurs.",
+    desc_en: "Teryel is a formidable figure in Berber mythology, half-sorceress, half-ogress. She embodies the dark and wild forces of nature. Feared by men, she roams forests and mountains, able to shapeshift to lure travelers to their doom.",
+  },
+  {
+    name: "Anzar",
+    img: "personnages/anzar.png",
+    role_fr: "Dieu de la Pluie & du Ciel",  role_en: "God of Rain & Sky",
+    desc_fr: "Anzar est la divinité de la pluie et du ciel dans la mythologie amazighe. Il est invoqué lors des sécheresses par des cérémonies rituelles. Selon la légende, il tomba amoureux d'Aïcha Qandisha, une déesse des eaux, symbolisant l'union du ciel et de la terre.",
+    desc_en: "Anzar is the deity of rain and sky in Amazigh mythology. He is invoked during droughts through ritual ceremonies. According to legend, he fell in love with Aïcha Qandisha, a water goddess, symbolizing the union of sky and earth.",
+    youtube: "sizNvqT1oMs",
+    youtube_label_fr: "La légende d'Anzar — Film",
+    youtube_label_en: "The Legend of Anzar — Film",
+  },
+  {
+    name: "Settut",
+    img: "personnages/settut.png",
+    role_fr: "Première Mère du Monde",  role_en: "First Mother of the World",
+    desc_fr: "Settut est la mère primordiale dans la cosmogonie berbère, à la fois sorcière et génitrice de l'humanité. Elle représente la fertilité, la création et les mystères de la vie. Ses pouvoirs s'étendent sur la nature entière, et elle est vénérée comme l'origine de toute chose.",
+    desc_en: "Settut is the primordial mother in Berber cosmogony, both sorceress and progenitor of humanity. She represents fertility, creation and the mysteries of life. Her powers extend over all of nature, and she is venerated as the origin of all things.",
+  },
+  {
+    name: "Hemmu u Namir",
+    img: "personnages/hemmu.png",
+    role_fr: "Roi Héros aux Sources d'Eau",  role_en: "King & Hero of the Water Springs",
+    desc_fr: "Hemmu u Namir (ou Ounamir) est un héros légendaire amazigh, roi vaillant dont la quête le mène vers des sources d'eau mystérieuses. Il incarne le courage, la justice et la connexion sacrée du peuple berbère avec l'eau — source de vie dans les terres arides.",
+    desc_en: "Hemmu u Namir (or Ounamir) is a legendary Amazigh hero, a valiant king whose quest leads him to mysterious water springs. He embodies courage, justice and the sacred connection of the Berber people with water — the source of life in arid lands.",
+  },
+];
+
+function openPersonnage(i) {
+  const p = PERSONNAGES[i];
+  document.getElementById('lb-img').src  = p.img;
+  document.getElementById('lb-img').alt  = p.name;
+  document.getElementById('lb-name').textContent = p.name;
+  document.getElementById('lb-role').textContent = LANG === 'en' ? p.role_en : p.role_fr;
+  document.getElementById('lb-desc').textContent = LANG === 'en' ? p.desc_en : p.desc_fr;
+  // Vidéo YouTube optionnelle
+  const videoWrap = document.getElementById('lb-video-wrap');
+  const iframe    = document.getElementById('lb-iframe');
+  const label     = document.getElementById('lb-video-label');
+  const modal     = document.getElementById('lb-modal');
+  if (p.youtube) {
+    iframe.src = `https://www.youtube.com/embed/${p.youtube}?rel=0&modestbranding=1`;
+    label.textContent = LANG === 'en' ? p.youtube_label_en : p.youtube_label_fr;
+    videoWrap.classList.remove('hidden');
+    modal.classList.remove('md:flex-row');
+    modal.classList.add('md:flex-col');
+  } else {
+    iframe.src = '';
+    videoWrap.classList.add('hidden');
+    modal.classList.remove('md:flex-col');
+    modal.classList.add('md:flex-row');
+  }
+  const lb = document.getElementById('personnage-lightbox');
+  lb.classList.remove('hidden');
+  lb.classList.add('flex');
+  lb.classList.add('flex-col');
+  lb.classList.add('items-center');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePersonnage(e) {
+  if (e && e.currentTarget === document.getElementById('personnage-lightbox')) {
+    if (e.target !== e.currentTarget && !e.target.classList.contains('absolute')) return;
+  }
+  const lb = document.getElementById('personnage-lightbox');
+  lb.classList.add('hidden');
+  lb.classList.remove('flex', 'flex-col', 'items-center');
+  document.getElementById('lb-iframe').src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getElementById('personnage-lightbox').classList.add('hidden'); document.getElementById('personnage-lightbox').classList.remove('flex'); document.body.style.overflow = ''; }});
+
+// ── COUNTERS ──
+const COUNTER_NS = 'amazimusic-fr';
+
+async function initCounters() {
+  try {
+    // Visite — crée le compteur si nécessaire
+    const vRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NS}/visits/up`);
+    if (!vRes.ok) return;
+    const vData = await vRes.json();
+
+    // Downloads — peut ne pas exister encore (0 dans ce cas)
+    let dlCount = 0;
+    try {
+      const dRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NS}/downloads/`);
+      if (dRes.ok) { const d = await dRes.json(); dlCount = d.count || 0; }
+    } catch(e) {}
+
+    const fmt = n => (n || 0).toLocaleString('fr-FR');
+    document.getElementById('visit-count').textContent = fmt(vData.count);
+    document.getElementById('dl-count').textContent = fmt(dlCount);
+    const badge = document.getElementById('stats-badge');
+    badge.classList.remove('hidden');
+    badge.classList.add('flex');
+  } catch(e) { /* API indisponible — badge reste caché */ }
+}
+
+async function trackDownload() {
+  try {
+    const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NS}/downloads/up`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const el = document.getElementById('dl-count');
+    if (el) el.textContent = (data.count || 0).toLocaleString('fr-FR');
+  } catch(e) {}
+}
+
+// Player download button
+playerDl.addEventListener('click', () => trackDownload());
+
+initCounters();
+
+// Apply language on load (after DOM elements exist)
+applyLang(LANG);
+
+// ── HERO SLIDESHOW ──
+(function() {
+  const covers = TRACKS.slice(0, 12).map(t => t.img);
+  const heroBg = document.getElementById('hero-bg');
+  let slides = [];
+  let current = 0;
+
+  // Pre-build all slide divs
+  covers.forEach((src, i) => {
+    const div = document.createElement('div');
+    div.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    div.style.backgroundImage = `url('${src}')`;
+    heroBg.insertBefore(div, heroBg.firstChild);
+    slides.push(div);
+  });
+
+  setInterval(() => {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 4000);
+})();
+
+// Init
+updateSectionHeader();
+setView('grid');
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Dark background -->
+  <rect width="64" height="64" rx="10" fill="#161311"/>
+  <!-- Gold top accent bar -->
+  <rect x="14" y="10" width="36" height="3" rx="1.5" fill="#e9c349"/>
+  <!-- Italic A in terracotta -->
+  <text x="32" y="50"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="38"
+    font-weight="900"
+    font-style="italic"
+    text-anchor="middle"
+    fill="#ffb695">A</text>
+  <!-- Tifinagh dot underneath -->
+  <circle cx="32" cy="57" r="2.5" fill="#e9c349"/>
+</svg>
