@@ -84,14 +84,43 @@ tailwind.config = {
     position: absolute; inset: 0;
     background-size: cover; background-position: center;
     opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+    transition: opacity 1.8s cubic-bezier(0.32, 0.72, 0, 1);
     transform: scale(1.05);
-    animation: hero-zoom 8s ease-in-out infinite alternate;
+    animation: hero-zoom 10s ease-in-out infinite alternate;
   }
   .hero-slide.active { opacity: 1; }
   @keyframes hero-zoom {
     from { transform: scale(1.05); }
-    to   { transform: scale(1.12); }
+    to   { transform: scale(1.14); }
+  }
+
+  /* Hero text reveal */
+  @keyframes text-reveal {
+    from { opacity: 0; transform: translateY(32px); filter: blur(8px); }
+    to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  .hero-reveal { animation: text-reveal 1s cubic-bezier(0.32, 0.72, 0, 1) both; }
+  .hero-reveal-d1 { animation-delay: 0.15s; }
+  .hero-reveal-d2 { animation-delay: 0.35s; }
+  .hero-reveal-d3 { animation-delay: 0.55s; }
+  .hero-reveal-d4 { animation-delay: 0.75s; }
+
+  /* Scroll reveal */
+  .sr { opacity: 0; transform: translateY(28px); filter: blur(6px);
+    transition: opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1),
+                transform 0.8s cubic-bezier(0.32, 0.72, 0, 1),
+                filter 0.8s cubic-bezier(0.32, 0.72, 0, 1); }
+  .sr.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+  .sr-d1 { transition-delay: 0.08s; }
+  .sr-d2 { transition-delay: 0.16s; }
+  .sr-d3 { transition-delay: 0.24s; }
+
+  /* Grain overlay */
+  .grain::before {
+    content: ''; position: fixed; inset: 0; z-index: 60; pointer-events: none;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
   }
 
   /* Image fallback */
@@ -100,54 +129,74 @@ tailwind.config = {
   .cover-img img[src=""], .cover-img img:not([src]) { display: none; }
 
   /* Grid card */
-  .track-card .card-overlay { opacity: 0; transition: opacity .2s; }
+  .track-card .card-overlay { opacity: 0; transition: opacity 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
   .track-card:hover .card-overlay { opacity: 1; }
-  .track-card .card-dl { opacity: 0; transition: opacity .2s; }
+  .track-card .card-dl { opacity: 0; transition: opacity 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
   .track-card:hover .card-dl { opacity: 1; }
-  .track-card { transition: transform .15s; }
-  .track-card:hover { transform: translateY(-3px); }
+  .track-card { transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
+  .track-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.4); }
   .track-card.is-playing .card-cover { box-shadow: 0 0 0 2px #ffb695, 0 0 24px rgba(255,182,149,0.3); }
   .track-card.is-playing .card-num { color: #ffb695; }
 
+  /* Character card 3D tilt */
+  .personnage-card {
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    transform-style: preserve-3d; perspective: 800px;
+  }
+  .personnage-card:hover {
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 40px rgba(255,182,149,0.08);
+  }
+
   /* View toggle active */
   .view-btn.active { color: #ffb695; }
-  .view-btn { color: #a08d85; transition: color .15s; }
+  .view-btn { color: #a08d85; transition: color 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
   .view-btn:hover { color: #d8c2ba; }
 
   /* Category tabs */
-  .tab-btn { color: rgba(160,141,133,0.6); border-color: rgba(83,68,61,0.35); background: transparent; transition: color .2s, border-color .2s, background .2s; }
+  .tab-btn { color: rgba(160,141,133,0.6); border-color: rgba(83,68,61,0.35); background: transparent;
+    transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
   .tab-btn:hover { color: rgba(255,182,149,0.85); border-color: rgba(255,182,149,0.35); }
   .tab-btn.active { color: #ffb695; border-color: #ffb695; background: rgba(255,182,149,0.08); }
+
+  /* Premium button hover */
+  .btn-premium { transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
+  .btn-premium:hover { box-shadow: 0 20px 40px -10px rgba(255,182,149,0.25); }
+  .btn-premium:active { transform: scale(0.97); }
 </style>
 </head>
-<body class="bg-background text-on-background font-body selection:bg-primary/30 selection:text-primary min-h-screen flex flex-col zellij-pattern">
+<body class="bg-background text-on-background font-body selection:bg-primary/30 selection:text-primary min-h-screen flex flex-col zellij-pattern grain">
 
-<!-- ── NAV ── -->
-<nav class="fixed top-0 w-full z-50 bg-[#161311]/75 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-5">
-  <div class="text-2xl font-black text-primary tracking-widest uppercase font-headline italic">AMAZI</div>
-  <div class="hidden md:flex items-center gap-3 text-xs font-label font-bold tracking-[0.15em] uppercase">
-    <span class="text-tertiary-fixed-dim px-1">ⵣ</span>
-    <span class="text-on-surface-variant" data-i18n="nav.music">Musique Berbère &amp; Orientale</span>
-    <span class="text-tertiary-fixed-dim px-1">ⵣ</span>
-    <span class="text-on-surface-variant/50" data-i18n="nav.barber">Amazi Café Barber · Dubaï</span>
-  </div>
-  <div class="flex items-center gap-3">
-    <!-- Stats badge -->
-    <div id="stats-badge" class="hidden items-center gap-1.5 text-[10px] font-label tracking-wide text-on-surface-variant/40 px-2.5 py-1.5 rounded-md border border-outline-variant/20 select-none" title="Visiteurs · Téléchargements">
-      <span class="material-symbols-outlined" style="font-size:13px;line-height:1;vertical-align:middle">visibility</span>
-      <span id="visit-count">—</span>
-      <span class="opacity-30 px-0.5">·</span>
-      <span class="material-symbols-outlined" style="font-size:13px;line-height:1;vertical-align:middle">download</span>
-      <span id="dl-count">—</span>
+<!-- ── NAV — Floating pill ── -->
+<nav class="fixed top-0 left-0 right-0 z-50 px-4 pt-4">
+  <div class="mx-auto flex max-w-5xl items-center justify-between rounded-2xl border border-outline-variant/25 bg-[#161311]/80 backdrop-blur-xl px-5 py-3">
+    <div class="text-xl font-black text-primary tracking-widest uppercase font-headline italic">AMAZI</div>
+    <div class="hidden md:flex items-center gap-3 text-[10px] font-label font-bold tracking-[0.15em] uppercase">
+      <span class="text-tertiary-fixed-dim px-1">ⵣ</span>
+      <span class="text-on-surface-variant" data-i18n="nav.music">Musique Berbère &amp; Orientale</span>
+      <span class="text-tertiary-fixed-dim px-1">ⵣ</span>
+      <span class="text-on-surface-variant/50" data-i18n="nav.barber">Amazi Café Barber · Dubaï</span>
     </div>
-    <button onclick="switchLang()"
-      class="text-xs font-label font-bold tracking-widest text-on-surface-variant border border-outline-variant/40 px-2.5 py-1.5 rounded-md hover:border-primary hover:text-primary transition-colors"
-      data-i18n="lang.toggle">EN</button>
-    <a href="https://buy.stripe.com/4gM14o81f09S4wH37R7EQ00" target="_blank"
-       class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold text-sm rounded-full transition-transform hover:scale-105 active:scale-95 shadow-lg">
-      <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">favorite</span>
-      <span data-i18n="nav.support">Soutenir</span>
-    </a>
+    <div class="flex items-center gap-3">
+      <!-- Stats badge -->
+      <div id="stats-badge" class="hidden items-center gap-1.5 text-[10px] font-label tracking-wide text-on-surface-variant/40 px-2.5 py-1.5 rounded-full border border-outline-variant/20 select-none" title="Visiteurs · Téléchargements">
+        <span class="material-symbols-outlined" style="font-size:13px;line-height:1;vertical-align:middle">visibility</span>
+        <span id="visit-count">—</span>
+        <span class="opacity-30 px-0.5">·</span>
+        <span class="material-symbols-outlined" style="font-size:13px;line-height:1;vertical-align:middle">download</span>
+        <span id="dl-count">—</span>
+      </div>
+      <button onclick="switchLang()"
+        class="text-xs font-label font-bold tracking-widest text-on-surface-variant border border-outline-variant/40 px-2.5 py-1.5 rounded-full hover:border-primary hover:text-primary transition-all duration-300"
+        data-i18n="lang.toggle">EN</button>
+      <a href="https://buy.stripe.com/4gM14o81f09S4wH37R7EQ00" target="_blank"
+         class="btn-premium group flex items-center gap-2 pl-5 pr-2 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold text-sm rounded-full shadow-lg">
+        <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">favorite</span>
+        <span data-i18n="nav.support">Soutenir</span>
+        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-black/10">
+          <span class="material-symbols-outlined text-sm transition-transform duration-300 group-hover:translate-x-0.5" style="font-size:14px">arrow_forward</span>
+        </span>
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -161,26 +210,29 @@ tailwind.config = {
     <div class="absolute bottom-1/3 right-1/4 w-64 h-64 bg-secondary/6 rounded-full blur-3xl pointer-events-none z-10"></div>
   </div>
   <div class="relative z-10 px-6 md:px-16 pb-28 max-w-4xl">
-    <div class="flex items-center gap-4 mb-5">
-      <span class="px-3 py-1 bg-secondary/20 text-secondary border border-secondary/20 text-[10px] uppercase tracking-[0.25em] font-bold rounded-full" data-i18n="hero.badge">Écoute Libre</span>
-      <div class="h-px w-20 bg-secondary/30"></div>
+    <div class="hero-reveal flex items-center gap-4 mb-6">
+      <span class="px-4 py-1.5 bg-secondary/15 text-secondary border border-secondary/20 text-[10px] uppercase tracking-[0.25em] font-bold rounded-full" data-i18n="hero.badge">Écoute Libre</span>
+      <div class="h-px w-20 bg-secondary/25"></div>
     </div>
-    <h1 class="font-headline text-5xl md:text-8xl font-black text-on-surface leading-[1.05] mb-4 tracking-tighter" data-i18n="hero.h1">
+    <h1 class="hero-reveal hero-reveal-d1 font-headline text-5xl md:text-[6.5rem] font-black text-on-surface leading-[0.95] mb-6 tracking-tighter" data-i18n="hero.h1">
       Musique de l'<span class="italic text-primary font-normal">Âme Amazigh</span>
     </h1>
-    <p class="font-headline text-lg md:text-xl text-on-surface-variant/80 italic mb-8 max-w-xl" data-i18n="hero.p">
+    <p class="hero-reveal hero-reveal-d2 font-headline text-lg md:text-xl text-on-surface-variant/70 italic mb-10 max-w-xl leading-relaxed" data-i18n="hero.p">
       12 compositions berbères &amp; orientales — téléchargement gratuit, soutien libre.
     </p>
     <button onclick="playTrack(0)"
-      class="px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold rounded-md flex items-center gap-3 transition-transform active:scale-95 shadow-xl text-sm uppercase tracking-wide">
+      class="hero-reveal hero-reveal-d3 btn-premium group flex items-center gap-3 pl-8 pr-3 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold rounded-full shadow-xl text-sm uppercase tracking-wide">
       <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">play_arrow</span>
       <span data-i18n="hero.btn">Écouter maintenant</span>
+      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-black/10 transition-transform duration-300 group-hover:scale-110">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:20px">arrow_forward</span>
+      </span>
     </button>
   </div>
 </section>
 
 <!-- ── CATEGORY TABS ── -->
-<div class="px-6 md:px-16 pt-12 pb-0 max-w-6xl mx-auto w-full">
+<div class="sr px-6 md:px-16 pt-14 pb-0 max-w-6xl mx-auto w-full">
   <div class="flex gap-3 flex-wrap">
     <button id="tab-music" onclick="setCategory('music')"
       class="tab-btn active flex items-center gap-2.5 px-6 py-3 rounded-full font-label font-bold text-sm uppercase tracking-[0.12em] border">
@@ -201,7 +253,7 @@ tailwind.config = {
 </div>
 
 <!-- ── TRACKLIST ── -->
-<section class="px-6 md:px-16 py-10 max-w-6xl mx-auto w-full">
+<section class="sr px-6 md:px-16 py-12 max-w-6xl mx-auto w-full">
   <div class="flex justify-between items-end mb-10">
     <div>
       <h2 id="section-title" class="font-headline text-3xl font-bold text-on-surface tracking-tight">Musique Détente</h2>
@@ -227,14 +279,14 @@ tailwind.config = {
 </section>
 
 <!-- ── PERSONNAGES MYTHIQUES ── -->
-<section class="px-6 md:px-16 py-16 max-w-6xl mx-auto w-full">
-  <div class="mb-10">
-    <h2 class="font-headline text-3xl font-bold text-on-surface tracking-tight" data-i18n="mythes.title">Personnages Mythiques</h2>
-    <div class="h-0.5 w-16 bg-secondary-container mt-3"></div>
-    <p class="text-on-surface-variant/70 font-body text-sm mt-4 max-w-xl italic" data-i18n="mythes.sub">Figures légendaires de la culture Amazigh — divinités, héros et esprits des temps anciens.</p>
+<section class="px-6 md:px-16 py-24 max-w-6xl mx-auto w-full">
+  <div class="sr mb-12">
+    <span class="inline-block mb-4 px-4 py-1.5 border border-secondary/20 bg-secondary/10 text-secondary text-[10px] uppercase tracking-[0.2em] font-bold rounded-full">Mythologie</span>
+    <h2 class="font-headline text-3xl md:text-4xl font-bold text-on-surface tracking-tight" data-i18n="mythes.title">Personnages Mythiques</h2>
+    <p class="text-on-surface-variant/60 font-body text-sm mt-4 max-w-xl italic leading-relaxed" data-i18n="mythes.sub">Figures légendaires de la culture Amazigh — divinités, héros et esprits des temps anciens.</p>
   </div>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
-    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(0)">
+    <div class="personnage-card sr group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(0)">
       <div class="aspect-[3/4] overflow-hidden">
         <img src="personnages/teryel.png" alt="Teryel" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
       </div>
@@ -244,7 +296,7 @@ tailwind.config = {
         <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.teryel.role">Sorcière-Ogresse</p>
       </div>
     </div>
-    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(1)">
+    <div class="personnage-card sr sr-d1 group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(1)">
       <div class="aspect-[3/4] overflow-hidden">
         <img src="personnages/anzar.png" alt="Anzar" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
       </div>
@@ -254,7 +306,7 @@ tailwind.config = {
         <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.anzar.role">Dieu de la Pluie</p>
       </div>
     </div>
-    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(2)">
+    <div class="personnage-card sr sr-d2 group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(2)">
       <div class="aspect-[3/4] overflow-hidden">
         <img src="personnages/settut.png" alt="Settut" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
       </div>
@@ -264,7 +316,7 @@ tailwind.config = {
         <p class="text-tertiary-fixed-dim text-[10px] uppercase tracking-widest font-label mt-1" data-i18n="mythes.settut.role">Première Mère du Monde</p>
       </div>
     </div>
-    <div class="personnage-card group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(3)">
+    <div class="personnage-card sr sr-d3 group relative rounded-2xl overflow-hidden cursor-pointer bg-surface-container" onclick="openPersonnage(3)">
       <div class="aspect-[3/4] overflow-hidden">
         <img src="personnages/hemmu.png" alt="Hemmu u Namir" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"/>
       </div>
@@ -311,25 +363,28 @@ tailwind.config = {
 </div>
 
 <!-- ── SUPPORT ── -->
-<section class="px-6 md:px-16 py-20 bg-surface-container-low/60">
-  <div class="max-w-2xl mx-auto text-center">
-    <div class="text-3xl text-tertiary-fixed-dim tracking-[0.5em] mb-6">ⵣ ✦ ⵣ</div>
-    <h2 class="font-headline text-4xl font-bold text-on-surface mb-4 italic" data-i18n="support.title">Soutenir Amazi</h2>
-    <p class="text-on-surface-variant font-body leading-relaxed mb-10 max-w-lg mx-auto" data-i18n="support.p">
+<section class="px-6 md:px-16 py-28 bg-surface-container-low/60">
+  <div class="sr max-w-2xl mx-auto text-center">
+    <div class="text-3xl text-tertiary-fixed-dim tracking-[0.5em] mb-8">ⵣ ✦ ⵣ</div>
+    <h2 class="font-headline text-4xl md:text-5xl font-bold text-on-surface mb-5 italic tracking-tight" data-i18n="support.title">Soutenir Amazi</h2>
+    <p class="text-on-surface-variant/80 font-body leading-relaxed mb-12 max-w-lg mx-auto text-lg" data-i18n="support.p">
       La musique est offerte librement.<br>
       Si elle t'a touché, soutiens l'artiste avec le montant de ton choix.
     </p>
     <a href="https://buy.stripe.com/4gM14o81f09S4wH37R7EQ00" target="_blank"
-       class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold text-base rounded-md transition-transform hover:scale-105 active:scale-95 shadow-2xl uppercase tracking-wide">
+       class="btn-premium group inline-flex items-center gap-3 pl-10 pr-4 py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold text-base rounded-full shadow-2xl uppercase tracking-wide">
       <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">favorite</span>
       <span data-i18n="support.btn">Soutenir Amazi — Montant libre</span>
+      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-black/10 transition-transform duration-300 group-hover:scale-110">
+        <span class="material-symbols-outlined" style="font-size:18px">arrow_forward</span>
+      </span>
     </a>
-    <p class="text-xs text-on-surface-variant/50 mt-5 font-label tracking-wide" data-i18n="support.legal">Paiement sécurisé · Stripe · Montant minimum 1€</p>
+    <p class="text-xs text-on-surface-variant/40 mt-6 font-label tracking-wide" data-i18n="support.legal">Paiement sécurisé · Stripe · Montant minimum 1€</p>
   </div>
 </section>
 
 <!-- ── FOOTER ── -->
-<footer class="w-full py-12 px-6 md:px-16 bg-[#1a1715] flex flex-col md:flex-row justify-between items-center gap-6 border-t border-tertiary/10">
+<footer class="w-full py-14 px-6 md:px-16 bg-[#1a1715] flex flex-col md:flex-row justify-between items-center gap-6 border-t border-tertiary/10">
   <div class="text-primary font-headline italic text-xl">AMAZI</div>
   <div class="text-sm tracking-wide text-primary-container/70 font-label text-center" data-i18n="footer.copy">
     © 2025 Amazi · Musique Berbère &amp; Orientale · Amazi Café Barber · Dubaï
@@ -917,6 +972,37 @@ applyLang(LANG);
 // Init
 updateSectionHeader();
 setView('grid');
+
+// ── SCROLL REVEAL ──
+(function() {
+  const els = document.querySelectorAll('.sr');
+  if (!els.length) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+})();
+
+// ── 3D TILT on character cards ──
+(function() {
+  const cards = document.querySelectorAll('.personnage-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+})();
 </script>
 </body>
 </html>
